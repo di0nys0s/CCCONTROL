@@ -20,7 +20,11 @@ def getnumcalcv2(adresse,user):
     p = re.compile(b'(\d+) active job')
     p2 = re.compile(b'(\d+) eligible job')
     p3 = re.compile(b'(\d+) blocked job')
-
+    p4 = re.compile(b'(\d+) ^\w+$ Running')
+    i=0
+    j=0
+    k=0
+    actjob=""
     while True:
         line = process.stdout.readline()
         if p.match(line):
@@ -32,9 +36,11 @@ def getnumcalcv2(adresse,user):
         elif p3.match(line):
             numblockcalc=int(p3.findall(line)[0])
             print('Numer of blocked process on colosse are '+str(numblockcalc))
+        elif p4.match(line):
+            actjob=actjob+' '+str(p3.findall(line)[0])
         elif line == b'':
             break
-    return numactcalc,numelcalc,numblockcalc,process.stdout
+    return numactcalc,numelcalc,numblockcalc,actjob
 
 
 def get_param(prompt_string):
@@ -129,11 +135,13 @@ def main():
           adresse = config.get(computers[i],'adresse')
           user = config.get(computers[i],'user')
           curses.endwin()
-          numactcalc[i],numelcalc[i],numblockcalc[i],processstdout=getnumcalcv2(adresse,user)
-          actcalc=np.zeros(numactcalc[i], dtype=np.int)
-          elcalc=np.zeros(numelcalc[i], dtype=np.int)
-          blockcalc=np.zeros(numblockcalc[i], dtype=np.int)
-          actcalc=getactid(adresse,user,processstdout,numactcalc[i])
+          numactcalc[i],numelcalc[i],numblockcalc[i],actjob=getnumcalcv2(adresse,user)
+          print('active job')
+          print(actjob)
+          #actcalc=np.zeros(numactcalc[i], dtype=np.int)
+          #elcalc=np.zeros(numelcalc[i], dtype=np.int)
+          #blockcalc=np.zeros(numblockcalc[i], dtype=np.int)
+          #actcalc=getactid(adresse,user,processstdout,numactcalc[i])
 
           screen.clear()
           screen.border(0)
