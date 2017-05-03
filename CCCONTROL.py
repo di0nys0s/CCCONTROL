@@ -13,7 +13,8 @@ def getnumcalcv2(adresse,user):
     while True:
         line = process.stdout.readline()
         if p.match(line):
-            print('Numer of active process on colosse are '+str(p.findall(line)[0]))
+            numactcalc=int(p.findall(line)[0])
+            print('Numer of active process on colosse are '+str(numactcalc))
             #ap.findall(line)[0])
         elif line != b'':
             os.write(1, line)
