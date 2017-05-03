@@ -20,7 +20,8 @@ def getnumcalcv2(adresse,user):
     p = re.compile(b'(\d+) active job')
     p2 = re.compile(b'(\d+) eligible job')
     p3 = re.compile(b'(\d+) blocked job')
-    p4 = re.compile(b'(\d+) ^\w+$ Running')
+    p4 = re.compile(b'(\d+)\s+\w+\s+Running')
+
     i=0
     j=0
     k=0
@@ -37,7 +38,7 @@ def getnumcalcv2(adresse,user):
             numblockcalc=int(p3.findall(line)[0])
             print('Numer of blocked process on colosse are '+str(numblockcalc))
         elif p4.match(line):
-            actjob=actjob+' '+str(p3.findall(line)[0])
+            actjob=actjob+' '+str(p4.findall(line)[0])
         elif line == b'':
             break
     return numactcalc,numelcalc,numblockcalc,actjob
