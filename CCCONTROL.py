@@ -6,20 +6,35 @@ import configparser
 import json
 import subprocess
 import re
+import numpy as np
+class calcul():
+    def __init__(self):
+        self.computer = ""
+        self.id = ""
+        self.state = ""
+        self.walltime = ""
+        self.rep = ""
 
 def getnumcalcv2(adresse,user):
     process = subprocess.Popen(["ssh", user+"@"+adresse, " showq -u "+user], stdout=subprocess.PIPE)
-    p = re.compile(b'(\d+) active jobs')
+    p = re.compile(b'(\d+) active job')
+    p2 = re.compile(b'(\d+) eligible job')
+    p3 = re.compile(b'(\d+) blocked job')
+
     while True:
         line = process.stdout.readline()
         if p.match(line):
             numactcalc=int(p.findall(line)[0])
             print('Numer of active process on colosse are '+str(numactcalc))
-            #ap.findall(line)[0])
-        elif line != b'':
-            os.write(1, line)
-        else:
+        elif p2.match(line):
+            numelcalc=int(p2.findall(line)[0])
+            print('Numer of eligible process on colosse are '+str(numelcalc))
+        elif p3.match(line):
+            numblockcalc=int(p3.findall(line)[0])
+            print('Numer of blocked process on colosse are '+str(numblockcalc))
+        elif line == b'':
             break
+    return numactcalc,numelcalc,numblockcalc
 
 
 def get_param(prompt_string):
@@ -49,23 +64,44 @@ def execute_cmd(cmd_string):
           print("Command terminated with error")
      input("Press Enter to continue...")
      print("")
+def updatenumcalc():
+    screen.addstr(len(computers)+10, 4, "---- "+computers[0]+" ----")
+    screen.addstr(len(computers)+11, 4, "- Running Calculation = "+str(numactcalc[0]))
+    screen.addstr(len(computers)+12, 4, "- Elligible Calculation = "+str(numelcalc[0]))
+    screen.addstr(len(computers)+13, 4, "- Blocked Calculation = "+str(numblockcalc[0]))
 
-x = 0
+    screen.addstr(len(computers)+10, 4+35, "---- "+computers[1]+" ----")
+    screen.addstr(len(computers)+11, 4+35, "- Running Calculation = "+str(numactcalc[1]))
+    screen.addstr(len(computers)+12, 4+35, "- Elligible Calculation = "+str(numelcalc[1]))
+    screen.addstr(len(computers)+13, 4+35, "- Blocked Calculation = "+str(numblockcalc[1]))
+
+    screen.addstr(len(computers)+10, 4+70, "---- "+computers[2]+" ----")
+    screen.addstr(len(computers)+11, 4+70, "- Running Calculation = "+str(numactcalc[2]))
+    screen.addstr(len(computers)+12, 4+70, "- Elligible Calculation = "+str(numelcalc[2]))
+    screen.addstr(len(computers)+13, 4+70, "- Blocked Calculation = "+str(numblockcalc[2]))
+def getactid(adresse,user):
+    p = re.compile(b'(\d+) ^\w+$ Running')
+    
+
+
 config = configparser.ConfigParser()
-config.read('/home/francois/.CQONTROL.cfg')
+config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
 computers = json.loads(config.get('SYSTEM', 'computers'))
-while x != ord('q'):
-     screen = curses.initscr()
+numactcalc=np.zeros(len(computers), dtype=np.int)
+numelcalc=np.zeros(len(computers), dtype=np.int)
+numblockcalc=np.zeros(len(computers), dtype=np.int)
+screen = curses.initscr()
+def main():
+    screen.clear()
+    screen.border(0)
+    updatenumcalc()
 
-     screen.clear()
-     screen.border(0)
+    x = 0
+    while x != ord('q'):
      screen.addstr(2, 2, "Please enter a number...")
      for i in range(len(computers)):
         screen.addstr(4+i, 4, str(i+1)+" - "+computers[i])
 
-     #screen.addstr(4, 4, "1 - Add a user")
-     #screen.addstr(5, 4, "2 - Restart Apache")
-     #screen.addstr(6, 4, "3 - Show disk space")
      screen.addstr(len(computers)+6, 4, str(len(computers)+2)+" - Add a computer")
      screen.addstr(len(computers)+7, 4, "q - Exit")
      screen.refresh()
@@ -76,14 +112,20 @@ while x != ord('q'):
           adresse = config.get(computers[i],'adresse')
           user = config.get(computers[i],'user')
           curses.endwin()
-          getnumcalcv2(adresse,user)
-          #execute_cmd("ssh "+user+"@"+adresse+" showq -u "+user)
-          #subprocess.check_output(['ssh', user+"@"+adresse, "showq -u "+user])
-     #if x == ord('2'):
-     #     curses.endwin()
-     #     execute_cmd("apachectl restart")
-     #if x == ord('3'):
-     #     curses.endwin()
-     #     execute_cmd("df -h")
+          numactcalc[i],numelcalc[i],numblockcalc[i]=getnumcalcv2(adresse,user)
+          actcalc=np.zeros(numactcalc[i], dtype=np.int)
+          elcalc=np.zeros(numelcalc[i], dtype=np.int)
+          blockcalc=np.zeros(numblockcalc[i], dtype=np.int)
+          getactid(adresse,user)
 
+          screen.clear()
+          screen.border(0)
+          screen.addstr(4,2,"------------ "+computers[i]+" ------------")
+          screen.addstr(len(computers)+11, 4, "- Running Calculation = "+str(numactcalc[i]))
+          screen.addstr(len(computers)+12, 4, "- Elligible Calculation = "+str(numelcalc[i]))
+          screen.addstr(len(computers)+13, 4, "- Blocked Calculation = "+str(numblockcalc[i]))
+          x = screen.getch()
+          if x == ord('b'):
+              main()
+main()
 curses.endwin()
