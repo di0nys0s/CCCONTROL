@@ -34,7 +34,7 @@ def getnumcalcv2(adresse,user):
             print('Numer of blocked process on colosse are '+str(numblockcalc))
         elif line == b'':
             break
-    return numactcalc,numelcalc,numblockcalc
+    return numactcalc,numelcalc,numblockcalc,process.stdout
 
 
 def get_param(prompt_string):
@@ -79,9 +79,26 @@ def updatenumcalc():
     screen.addstr(len(computers)+11, 4+70, "- Running Calculation = "+str(numactcalc[2]))
     screen.addstr(len(computers)+12, 4+70, "- Elligible Calculation = "+str(numelcalc[2]))
     screen.addstr(len(computers)+13, 4+70, "- Blocked Calculation = "+str(numblockcalc[2]))
-def getactid(adresse,user):
+def getactid(adresse,user,processstdout,numactcalc):
+    print('PROCESS=')
+    print(str(processstdout))
     p = re.compile(b'(\d+) ^\w+$ Running')
-    
+    p2 = re.compile(b'(\d+) eligible job')
+    actcalc=np.zeros(numactcalc, dtype=np.int)
+    i=0
+    while True:
+        line = processstdout.readline()
+        print(str(line))
+        if p.match(line):
+            actcalc[i]=int(p.findall(line)[0])
+            i=i+1
+            print('process '+str(i)+' = '+str(actcalc[i]))
+        elif p2.match(line):
+            numelcalc=int(p2.findall(line)[0])
+            print('IN GETACTID Numer of eligible process on colosse are '+str(numelcalc))
+        elif line == b'':
+            break    
+    return actcalc
 
 
 config = configparser.ConfigParser()
@@ -112,11 +129,11 @@ def main():
           adresse = config.get(computers[i],'adresse')
           user = config.get(computers[i],'user')
           curses.endwin()
-          numactcalc[i],numelcalc[i],numblockcalc[i]=getnumcalcv2(adresse,user)
+          numactcalc[i],numelcalc[i],numblockcalc[i],processstdout=getnumcalcv2(adresse,user)
           actcalc=np.zeros(numactcalc[i], dtype=np.int)
           elcalc=np.zeros(numelcalc[i], dtype=np.int)
           blockcalc=np.zeros(numblockcalc[i], dtype=np.int)
-          getactid(adresse,user)
+          actcalc=getactid(adresse,user,processstdout,numactcalc[i])
 
           screen.clear()
           screen.border(0)
@@ -129,3 +146,4 @@ def main():
               main()
 main()
 curses.endwin()
+
