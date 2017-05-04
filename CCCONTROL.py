@@ -106,7 +106,9 @@ def getactid(adresse,user,processstdout,numactcalc):
         elif line == b'':
             break    
     return actcalc
-
+#def addacomp():
+#    print('add a comp')
+#    main()
 
 config = configparser.ConfigParser()
 config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
@@ -126,7 +128,8 @@ def main():
      for i in range(len(computers)):
         screen.addstr(4+i, 4, str(i+1)+" - "+computers[i])
 
-     screen.addstr(len(computers)+6, 4, str(len(computers)+2)+" - Add a computer")
+#TODO : add a comp functions
+#     screen.addstr(len(computers)+6, 4, str(len(computers)+2)+" - Add a computer")
      screen.addstr(len(computers)+7, 4, "q - Exit")
      screen.refresh()
 
@@ -153,6 +156,8 @@ def main():
           x = screen.getch()
           if x == ord('b'):
               main()
+#    if x== ord(str(len(computers)+6)):
+#        addacomp()
 main()
 curses.endwin()
 
