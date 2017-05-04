@@ -7,6 +7,7 @@ import json
 import subprocess
 import re
 import numpy as np
+from functions import getnumcalcv2
 class calcul():
     def __init__(self):
         self.computer = ""
@@ -15,33 +16,7 @@ class calcul():
         self.walltime = ""
         self.rep = ""
 
-def getnumcalcv2(adresse,user):
-    process = subprocess.Popen(["ssh", user+"@"+adresse, " showq -u "+user], stdout=subprocess.PIPE)
-    p = re.compile(b'(\d+) active job')
-    p2 = re.compile(b'(\d+) eligible job')
-    p3 = re.compile(b'(\d+) blocked job')
-    p4 = re.compile(b'(\d+)\s+\w+\s+Running')
 
-    i=0
-    j=0
-    k=0
-    actjob=""
-    while True:
-        line = process.stdout.readline()
-        if p.match(line):
-            numactcalc=int(p.findall(line)[0])
-            print('Numer of active process on colosse are '+str(numactcalc))
-        elif p2.match(line):
-            numelcalc=int(p2.findall(line)[0])
-            print('Numer of eligible process on colosse are '+str(numelcalc))
-        elif p3.match(line):
-            numblockcalc=int(p3.findall(line)[0])
-            print('Numer of blocked process on colosse are '+str(numblockcalc))
-        elif p4.match(line):
-            actjob=actjob+' '+str(p4.findall(line)[0])
-        elif line == b'':
-            break
-    return numactcalc,numelcalc,numblockcalc,actjob
 
 
 def get_param(prompt_string):
@@ -106,9 +81,9 @@ def getactid(adresse,user,processstdout,numactcalc):
         elif line == b'':
             break    
     return actcalc
-#def addacomp():
-#    print('add a comp')
-#    main()
+def addacomp():
+    print('add a comp')
+    main()
 
 config = configparser.ConfigParser()
 config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
@@ -156,8 +131,8 @@ def main():
           x = screen.getch()
           if x == ord('b'):
               main()
-#    if x== ord(str(len(computers)+6)):
-#        addacomp()
+    if x==ord(str(len(computers)+6)):
+        addacomp()
 main()
 curses.endwin()
 
