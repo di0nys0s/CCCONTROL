@@ -1,3 +1,5 @@
+import re
+import subprocess
 def getnumcalcv2(adresse,user):
     process = subprocess.Popen(["ssh", user+"@"+adresse, " showq -u "+user], stdout=subprocess.PIPE)
     p = re.compile(b'(\d+) active job')

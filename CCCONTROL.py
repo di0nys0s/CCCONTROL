@@ -2,6 +2,7 @@
 
 import os
 import curses
+from curses.textpad import Textbox, rectangle
 import configparser
 import json
 import subprocess
@@ -82,8 +83,25 @@ def getactid(adresse,user,processstdout,numactcalc):
             break    
     return actcalc
 def addacomp():
-    print('add a comp')
+    screen.clear()
+    screen.border(0)
+    screen.addstr(4,2,"------------ Add a computer ------------")
+    screen.addstr(4,3,"name : ")
+    #editwin = curses.newwin(5,30, 2,1)
+    box = Textbox(screen)
+    rectangle(screen, 4,10, 12, 12)
+    box.edit()
+    name = box.gather()
+    screen.addstr(4,4,"adresse : ")
+    screen.addstr(4,5,"username : ")
     main()
+
+
+
+
+
+
+
 
 config = configparser.ConfigParser()
 config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
@@ -103,8 +121,7 @@ def main():
      for i in range(len(computers)):
         screen.addstr(4+i, 4, str(i+1)+" - "+computers[i])
 
-#TODO : add a comp functions
-#     screen.addstr(len(computers)+6, 4, str(len(computers)+2)+" - Add a computer")
+     screen.addstr(len(computers)+6, 4, "a - Add a computer")
      screen.addstr(len(computers)+7, 4, "q - Exit")
      screen.refresh()
 
@@ -131,7 +148,7 @@ def main():
           x = screen.getch()
           if x == ord('b'):
               main()
-    if x==ord(str(len(computers)+6)):
+     if x==ord('a'):
         addacomp()
 main()
 curses.endwin()
