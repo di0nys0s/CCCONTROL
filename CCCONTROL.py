@@ -9,6 +9,13 @@ import subprocess
 import re
 import numpy as np
 from functions import getnumcalcv2
+import sqlite3
+
+#conn = sqlite3.connect('/home/francois/.CCCONTROL/CCONTROL.sqlite3')
+#cur = conn.cursor()
+#cur.execute('CREATE TABLE IF NOT EXISTS Computers (name TEXT, adress TEXT, username TEXT)')
+#cur.execute('CREATE TABLE IF NOT EXISTS Calcul (title TEXT, id INTEGER, computer TEXT, status TEXT)')
+#cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( 'Colosse', 'colosse.calculquebec.ca', 'fradion12' ) )
 class calcul():
     def __init__(self):
         self.computer = ""
@@ -106,6 +113,10 @@ def addacomp():
 config = configparser.ConfigParser()
 config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
 computers = json.loads(config.get('SYSTEM', 'computers'))
+#cur.execute('SELECT name FROM Computers')
+#computers = []
+#for row in cur:
+#    computers.append(str(row))
 numactcalc=np.zeros(len(computers), dtype=np.int)
 numelcalc=np.zeros(len(computers), dtype=np.int)
 numblockcalc=np.zeros(len(computers), dtype=np.int)
