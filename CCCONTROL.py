@@ -11,11 +11,11 @@ import numpy as np
 from functions import getnumcalcv2
 import sqlite3
 
-#conn = sqlite3.connect('/home/francois/.CCCONTROL/CCONTROL.sqlite3')
-#cur = conn.cursor()
-#cur.execute('CREATE TABLE IF NOT EXISTS Computers (name TEXT, adress TEXT, username TEXT)')
-#cur.execute('CREATE TABLE IF NOT EXISTS Calcul (title TEXT, id INTEGER, computer TEXT, status TEXT)')
-#cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( 'Colosse', 'colosse.calculquebec.ca', 'fradion12' ) )
+conn = sqlite3.connect('/home/francois/.CCCONTROL/CCONTROL.sqlite3')
+cur = conn.cursor()
+cur.execute('CREATE TABLE IF NOT EXISTS Computers (name TEXT, adress TEXT, username TEXT)')
+cur.execute('CREATE TABLE IF NOT EXISTS Calcul (title TEXT, id INTEGER, computer TEXT, status TEXT)')
+cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( 'Colosse', 'colosse.calculquebec.ca', 'fradion12' ) )
 class calcul():
     def __init__(self):
         self.computer = ""
@@ -60,15 +60,15 @@ def updatenumcalc():
     screen.addstr(len(computers)+12, 4, "- Elligible Calculation = "+str(numelcalc[0]))
     screen.addstr(len(computers)+13, 4, "- Blocked Calculation = "+str(numblockcalc[0]))
 
-    screen.addstr(len(computers)+10, 4+35, "---- "+computers[1]+" ----")
-    screen.addstr(len(computers)+11, 4+35, "- Running Calculation = "+str(numactcalc[1]))
-    screen.addstr(len(computers)+12, 4+35, "- Elligible Calculation = "+str(numelcalc[1]))
-    screen.addstr(len(computers)+13, 4+35, "- Blocked Calculation = "+str(numblockcalc[1]))
+    #screen.addstr(len(computers)+10, 4+35, "---- "+computers[1]+" ----")
+    #screen.addstr(len(computers)+11, 4+35, "- Running Calculation = "+str(numactcalc[1]))
+    #screen.addstr(len(computers)+12, 4+35, "- Elligible Calculation = "+str(numelcalc[1]))
+    #screen.addstr(len(computers)+13, 4+35, "- Blocked Calculation = "+str(numblockcalc[1]))
 
-    screen.addstr(len(computers)+10, 4+70, "---- "+computers[2]+" ----")
-    screen.addstr(len(computers)+11, 4+70, "- Running Calculation = "+str(numactcalc[2]))
-    screen.addstr(len(computers)+12, 4+70, "- Elligible Calculation = "+str(numelcalc[2]))
-    screen.addstr(len(computers)+13, 4+70, "- Blocked Calculation = "+str(numblockcalc[2]))
+    #screen.addstr(len(computers)+10, 4+70, "---- "+computers[2]+" ----")
+    #screen.addstr(len(computers)+11, 4+70, "- Running Calculation = "+str(numactcalc[2]))
+    #screen.addstr(len(computers)+12, 4+70, "- Elligible Calculation = "+str(numelcalc[2]))
+    #screen.addstr(len(computers)+13, 4+70, "- Blocked Calculation = "+str(numblockcalc[2]))
 def getactid(adresse,user,processstdout,numactcalc):
     print('PROCESS=')
     print(str(processstdout))
@@ -112,11 +112,11 @@ def addacomp():
 
 config = configparser.ConfigParser()
 config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
-computers = json.loads(config.get('SYSTEM', 'computers'))
-#cur.execute('SELECT name FROM Computers')
-#computers = []
-#for row in cur:
-#    computers.append(str(row))
+#computers = json.loads(config.get('SYSTEM', 'computers'))
+cur.execute('SELECT name FROM Computers')
+computers = []
+for row in cur:
+    computers.append(str(row[0]))
 numactcalc=np.zeros(len(computers), dtype=np.int)
 numelcalc=np.zeros(len(computers), dtype=np.int)
 numblockcalc=np.zeros(len(computers), dtype=np.int)
