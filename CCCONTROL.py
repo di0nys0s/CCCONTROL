@@ -11,12 +11,15 @@ import numpy as np
 from functions import getnumcalcv2
 import sqlite3
 
-conn = sqlite3.connect('/home/francois/.CCCONTROL/CCONTROL.sqlite3')
+conn = sqlite3.connect('/home/francois/CCCONTROL/CCONTROL.sqlite3')
 cur = conn.cursor()
 cur.execute('CREATE TABLE IF NOT EXISTS Computers (name TEXT, adress TEXT, username TEXT)')
 cur.execute('CREATE TABLE IF NOT EXISTS Calcul (title TEXT, id INTEGER, computer TEXT, status TEXT)')
 cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( 'Colosse', 'colosse.calculquebec.ca', 'fradion12' ) )
-class calcul():
+
+
+
+class Calcul():
     def __init__(self):
         self.computer = ""
         self.id = ""
@@ -24,6 +27,12 @@ class calcul():
         self.walltime = ""
         self.rep = ""
 
+
+class Computer():
+    def __init__(self):
+        self.name = ""
+        self.username = ""
+        self.adress = ""
 
 
 
@@ -105,17 +114,28 @@ def addacomp():
 
 
 
-
+objcomputer=Computer()
+objcomputer.name='Colosse'
+objcomputer.username='fradion12'
+objcomputer.adress='colosse.calculquebec.ca'
+computerlist=[]
+computerlist.append(objcomputer)
 
 
 
 
 config = configparser.ConfigParser()
-config.read('/home/francois/.CCCONTROL/CCCONTROL.cfg')
-#computers = json.loads(config.get('SYSTEM', 'computers'))
+config.read('/home/francois/CCCONTROL/CCCONTROL.cfg')
+computersconfig = json.loads(config.get('SYSTEM', 'computers'))
+for i in range(len(computersconfig)):
+    adresse = config.get(computersconfig[i],'adresse')
+    user = config.get(computersconfig[i],'user')
+    #cur.execute('SELECT name FROM Computers WHERE (name) LIKE ( ? )', ( comp )
+
 cur.execute('SELECT name FROM Computers')
 computers = []
 for row in cur:
+    print(str(row[0]))
     computers.append(str(row[0]))
 numactcalc=np.zeros(len(computers), dtype=np.int)
 numelcalc=np.zeros(len(computers), dtype=np.int)
@@ -139,10 +159,10 @@ def main():
      x = screen.getch()
      for i in range(len(computers)):
         if x == ord(str(i+1)):
-          adresse = config.get(computers[i],'adresse')
-          user = config.get(computers[i],'user')
-          curses.endwin()
-          numactcalc[i],numelcalc[i],numblockcalc[i],actjob=getnumcalcv2(adresse,user)
+          #adresse = config.get(computers[i],'adresse')
+          #user = config.get(computers[i],'user')
+          #curses.endwin()
+          numactcalc[i],numelcalc[i],numblockcalc[i],actjob=getnumcalcv2(computerlist[i].adress,computerlist[i].username)
           print('active job')
           print(actjob)
           #actcalc=np.zeros(numactcalc[i], dtype=np.int)
