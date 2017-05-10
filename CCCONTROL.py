@@ -15,9 +15,10 @@ conn = sqlite3.connect('/home/francois/CCCONTROL/CCONTROL.sqlite3')
 cur = conn.cursor()
 cur.execute('CREATE TABLE IF NOT EXISTS Computers (name TEXT, adress TEXT, username TEXT)')
 cur.execute('CREATE TABLE IF NOT EXISTS Calcul (title TEXT, id INTEGER, computer TEXT, status TEXT)')
-cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( 'Colosse', 'colosse.calculquebec.ca', 'fradion12' ) )
+#cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( 'colosse', 'colosse.calculquebec.ca', 'fradion12' ) )
 
 
+conn.commit()
 
 class Calcul():
     def __init__(self):
@@ -114,12 +115,12 @@ def addacomp():
 
 
 
-objcomputer=Computer()
-objcomputer.name='Colosse'
-objcomputer.username='fradion12'
-objcomputer.adress='colosse.calculquebec.ca'
+#objcomputer=Computer()
+#objcomputer.name='colosse'
+#objcomputer.username='fradion12'
+#objcomputer.adress='colosse.calculquebec.ca'
 computerlist=[]
-computerlist.append(objcomputer)
+#computerlist.append(objcomputer)
 
 
 
@@ -130,7 +131,32 @@ computersconfig = json.loads(config.get('SYSTEM', 'computers'))
 for i in range(len(computersconfig)):
     adresse = config.get(computersconfig[i],'adresse')
     user = config.get(computersconfig[i],'user')
-    #cur.execute('SELECT name FROM Computers WHERE (name) LIKE ( ? )', ( comp )
+    cur.execute("SELECT name FROM Computers WHERE name = '%s'" % computersconfig[i] )
+    
+    data=cur.fetchall()
+    if len(data)==0:
+        print('There is no computer named %s' % computersconfig[i])
+        cur.execute('INSERT INTO Computers (name, adress, username) VALUES ( ?, ? , ?)', ( computersconfig[i], adresse, user ) )
+        conn.commit()
+        objcomputer=Computer()
+        objcomputer.name=computersconfig[i]
+        objcomputer.username=user
+        objcomputer.adress=adresse
+        computerlist.append(objcomputer)
+
+
+
+    else:
+        print('There is computer named %s' % computersconfig[i])
+        objcomputer=Computer()
+        objcomputer.name=computersconfig[i]
+        objcomputer.username=user
+        objcomputer.adress=adresse
+        computerlist.append(objcomputer)
+
+#symbol = 'RHAT'
+#c.execute("SELECT * FROM stocks WHERE symbol = '%s'" % symbol)
+
 
 cur.execute('SELECT name FROM Computers')
 computers = []
